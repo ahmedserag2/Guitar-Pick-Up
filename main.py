@@ -12,6 +12,9 @@ import time
 import HandTrackingModule as HTM 
 import PoseTrackingModule as PTM
 
+from tuner.tuner_hps import *
+
+
 
 
 def main():
@@ -23,35 +26,36 @@ def main():
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW) #captureDevice = camera
     hand_positions = []
     pose_positions = []
-    while True:
-        success, img = cap.read()
-        #overwrite drawn image draw is set true by default
-        img = handDetector.find_hands(img)
-        lmListHand = handDetector.find_position(img)
-        #print(lmListHand)
-        hand_positions.append(lmListHand)
-        img = poseDetector.find_pose(img)
-        lmListPose = poseDetector.find_position(img)
-        pose_positions.append(lmListPose)
-        
-        
-        cTime = time.time()
-        fps = 1/ (cTime - pTime)
-        pTime = cTime
-        
-        cv2.putText(img,str(int(fps)),(10,70), cv2.FONT_HERSHEY_PLAIN,3,(255,0,255),3)
-        
-        cv2.imshow("Image",img)
-        if(cv2.waitKey(1) == 27):
-            cv2.destroyWindow("Image")
-            '''
-            with open('pose.csv','w') as file:
-                file.writelines(["%s\n" % item  for item in lmListPose])
-            with open('hands.csv','w') as file:
-                file.writelines(["%s\n" % item  for item in hand_positions])
-            '''
-            break
-        
+    with sd.InputStream(channels=1, callback=callback, blocksize=WINDOW_STEP, samplerate=SAMPLE_FREQ):
+        while True:
+            success, img = cap.read()
+            #overwrite drawn image draw is set true by default
+            img = handDetector.find_hands(img)
+            lmListHand = handDetector.find_position(img)
+            #print(lmListHand)
+            hand_positions.append(lmListHand)
+            #img = poseDetector.find_pose(img)
+            #lmListPose = poseDetector.find_position(img)
+            #pose_positions.append(lmListPose)
+            
+            
+            cTime = time.time()
+            fps = 1/ (cTime - pTime)
+            pTime = cTime
+            
+            cv2.putText(img,str(int(fps)),(10,70), cv2.FONT_HERSHEY_PLAIN,3,(255,0,255),3)
+            
+            cv2.imshow("Image",img)
+            if(cv2.waitKey(1) == 27):
+                cv2.destroyWindow("Image")
+                '''
+                with open('pose.csv','w') as file:
+                    file.writelines(["%s\n" % item  for item in lmListPose])
+                with open('hands.csv','w') as file:
+                    file.writelines(["%s\n" % item  for item in hand_positions])
+                '''
+                break
+            
 
 
 '''
@@ -81,3 +85,12 @@ def main():
     
 if __name__ == "__main__":
     main()
+    '''
+    try:
+        print("Starting HPS guitar tuner...")
+        
+            while True:
+                time.sleep(0.5)
+    except Exception as exc:
+        print(str(exc))
+        '''

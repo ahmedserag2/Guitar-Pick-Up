@@ -9,10 +9,11 @@ Created on Thu Nov  4 14:46:05 2021
 import cv2
 import mediapipe as mp
 import time
+import csv
 
 
 class handDetector():
-    def __init__(self,mode = False,max_hands = 2,detection_confidence = 0.5,trackConfidence = 0.5):
+    def __init__(self,mode = False,max_hands = 1,detection_confidence = 0.5,trackConfidence = 0.5):
         self.mode = mode
         self.max_hands = max_hands
         self.detection_confidence = detection_confidence
@@ -83,6 +84,13 @@ class handDetector():
         #print(id,cx,cy)
     '''
     
+def format_string(s):
+    #x = s[1]
+    #y = s[2]
+    #id= s[0]
+    #return {'id':id,'x':x,'y':y}
+    return str(s).replace(',','').replace('[','').replace(']','')
+    
 def main():
     pTime = 0
     cTime = 0
@@ -93,7 +101,32 @@ def main():
         #overwrite drawn image draw is set true by default
         img = detector.find_hands(img)
         lmList = detector.find_position(img)
-        print(lmList)
+        
+        #print(str(lmList))
+        
+        row = [format_string(item) for item in lmList]
+        print(row)
+        #.replace('[','').replace(']','')
+        
+        if(len(lmList) != 0):
+            with open("out.csv", "a", newline="") as f:
+                
+                #f.write('{l},'.format(l = str(lmList[0]))
+                f.write('{l},'.format(l=str(row[0].split(' ')[1])))
+                f.write('{l},'.format(l=str(row[0].split(' ')[2])))
+                f.write('{l},'.format(l=str(row[8].split(' ')[1])))
+                f.write('{l},'.format(l=str(row[8].split(' ')[2])))
+                f.write('{l},'.format(l=str(row[12].split(' ')[1])))
+                f.write('{l},'.format(l=str(row[12].split(' ')[2])))
+                f.write('{l},'.format(l=str(row[16].split(' ')[1])))
+                f.write('{l},'.format(l=str(row[16].split(' ')[2])))
+                f.write('{l},'.format(l=str(row[20].split(' ')[1])))
+                f.write('{l}\n'.format(l=str(row[20].split(' ')[2])))
+                
+         
+                
+
+                
         cTime = time.time()
         fps = 1/ (cTime - pTime)
         pTime = cTime
